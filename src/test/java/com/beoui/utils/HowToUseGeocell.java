@@ -24,7 +24,6 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import com.beoui.geocell.GeocellManager;
-import com.beoui.geocell.JPALocationCapableRepositorySearchImpl;
 import com.beoui.geocell.LocationCapableRepositorySearch;
 import com.beoui.geocell.model.BoundingBox;
 import com.beoui.geocell.model.CostFunction;
@@ -117,28 +116,6 @@ public class HowToUseGeocell extends TestCase {
 
         // Show in the log what cells shoud be used in the query
         log.log(Level.INFO, "Geocells to use in query for PointSW("+latSW+","+lonSW+") ; PointNE("+latNE+","+lonNE+") are: "+cells);
-    }
-
-    /**
-     * To test proximity search, you have to give your base query and it will be enhanced with geocells restrictions.
-     *
-     */
-    // TODO configure persistent manager to run a real test
-    public void testHowToQueryWithProximitySearch() {
-        Point center = new Point(20.0, 12.4);
-        PersistenceManager pm = null;// here put your persistent manager
-        List<Object> params = new ArrayList<Object>();
-        params.add("John");
-        GeocellQuery baseQuery = new GeocellQuery("lastName == lastNameParam", "String lastNameParam", params);
-
-        List<ObjectToSave> objects = null;
-        try {
-        	LocationCapableRepositorySearch<ObjectToSave> searchImpl = new JPALocationCapableRepositorySearchImpl<ObjectToSave>(baseQuery, pm, ObjectToSave.class);
-            objects = GeocellManager.proximityFetch(center, 40, 0, searchImpl );
-            Assert.assertTrue(objects.size() > 0);
-        } catch (Exception e) {
-            // We catch excption here because we have not configured the PersistentManager (and so the queries won't work)
-        }
     }
 
 }
