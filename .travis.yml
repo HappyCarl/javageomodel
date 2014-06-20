@@ -1,0 +1,21 @@
+language: java
+install:
+- mvn install
+script:
+- echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+- git clone https://$GIT_TOKEN@github.com/HappyCarl/mvn-repo.git mvn-repo
+- export APP_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
+  -Dexpression=project.version|grep -Ev '(^\[|Download\w+:)')
+- export REPO_STRING="release-repo::default::file:./mvn-repo/releases"
+- if [[ $APP_VERSION == *SNAPSHOT* ]]; then export REPO_STRING="snapshot-repo::default::file:./mvn-repo/snapshots";
+  fi;
+- mvn -DaltDeploymentRepository=$REPO_STRING clean deploy
+- cd mvn-repo
+- git config --global user.email "info@travis-ci.org"
+- git config --global user.name "Travis CI"
+- git add *
+- git commit -m "New Java GeoModel Libs. Deploy ${TRAVIS_BUILD_NUMBER}."
+- git push -u origin master &> /dev/null
+env:
+  global:
+    secure: a3wLZktzxF6Lg9N0owoDU/pvHjoeVyMSgF0GvJi1YXaLSy1DQFgHqI48p5tmpu4hHuKZWw6v71jDyU4rvfdeCM6tgVh7ctAoJ/qShKs+lGjEoW8vFu0Ch8g71GhJhBHdReQFVO7AElVmflZwBQZhQyhjeogOvdTwvGmBj6+kw5c=
